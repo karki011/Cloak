@@ -8,6 +8,7 @@ struct OverlayView: View {
     @State private var transcriptLineCount = 0
     @FocusState private var inputFocused: Bool
     @AppStorage("overlayOpacity") private var overlayOpacity = 0.92
+    @AppStorage("fontSize") private var fontSize = 12.0
     @AppStorage("themeMode") private var themeMode = "auto"
     @ObservedObject private var themeSampler = ThemeSampler.shared
     
@@ -248,7 +249,7 @@ struct OverlayView: View {
         let rect = (text + "\n") .boundingRect(
             with: NSSize(width: width, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [.font: NSFont.systemFont(ofSize: 14)]
+            attributes: [.font: NSFont.systemFont(ofSize: fontSize + 2)]
         )
         return min(140, max(30, rect.height + 22))
     }
@@ -257,14 +258,14 @@ struct OverlayView: View {
         ZStack(alignment: .topLeading) {
             if viewModel.question.isEmpty {
                 Text("Ask or hold Right-⌥ to talk…")
-                    .font(.system(size: 14))
+                    .font(.system(size: fontSize + 2))
                     .foregroundStyle(.secondary.opacity(0.6))
                     .padding(.horizontal, 11)
                     .padding(.top, 8)
                     .allowsHitTesting(false)
             }
             TextEditor(text: $viewModel.question)
-                .font(.system(size: 14))
+                .font(.system(size: fontSize + 2))
                 .focused($inputFocused)
                 .scrollContentBackground(.hidden)
                 .frame(height: inputHeight(for: viewModel.question))
@@ -309,6 +310,7 @@ private struct TranscriptArea: View {
     let lines: [TranscriptLine]
     @Binding var autoQA: Bool
     var onAskMore: (String) -> Void
+    @AppStorage("fontSize") private var fontSize = 12.0
 
     private func labelColor(_ speaker: String) -> Color {
         switch speaker {
@@ -334,15 +336,15 @@ private struct TranscriptArea: View {
                         ForEach(lines) { line in
                             HStack(alignment: .top, spacing: 6) {
                                 Text(line.speaker + ":")
-                                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                                    .font(.system(size: fontSize - 1, weight: .semibold, design: .monospaced))
                                     .foregroundStyle(labelColor(line.speaker))
                                     .frame(width: 44, alignment: .leading)
                                 Group {
                                     if line.speaker == "AI" {
-                                        MarkdownText(text: line.text.isEmpty && !line.isFinal ? "thinking…" : line.text, fontSize: 12)
+                                        MarkdownText(text: line.text.isEmpty && !line.isFinal ? "thinking…" : line.text, fontSize: fontSize)
                                     } else {
                                         Text(line.text.isEmpty ? "…" : line.text)
-                                            .font(.system(size: 12, design: .monospaced))
+                                            .font(.system(size: fontSize, design: .monospaced))
                                     }
                                 }
                                 .foregroundStyle(.primary.opacity(line.isFinal ? 0.9 : 0.55))
