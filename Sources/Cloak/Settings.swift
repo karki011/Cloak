@@ -58,6 +58,7 @@ struct SettingsView: View {
     @AppStorage("reasoningEffort") private var reasoningEffort: String = "none"
     @AppStorage("debugMode") private var debugMode = false
     @AppStorage("overlayOpacity") private var overlayOpacity = 0.92
+    @AppStorage("fontSize") private var fontSize = 12.0
     @AppStorage("themeMode") private var themeMode = "auto"
 
     // Keep a custom value (e.g. a Groq model name) selectable in the dropdown.
@@ -122,6 +123,15 @@ struct SettingsView: View {
                         .frame(width: 36)
                 }
                 .help("Lower = more see-through, so the overlay blocks less of what's behind it")
+                HStack {
+                    Text("Font size")
+                    Slider(value: $fontSize, in: 10...20, step: 1)
+                    Text("\(Int(fontSize))pt")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(width: 36)
+                }
+                .help("Text size in the conversation feed and input")
             }
             Section("Debugging") {
                 Toggle("Debug mode (visible to screenshots, diagnostics line)", isOn: $debugMode)
